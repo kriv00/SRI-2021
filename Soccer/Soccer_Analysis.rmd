@@ -1,0 +1,308 @@
+---
+title: "Soccer Preformance Analysis"
+author: 
+- "Kelly Rivera"
+- "Contribitors: Rachel Tuffy, Manuela Montoya, Dr. Sean Mondesire"
+output: html_notebook
+---
+
+# Import Libraries
+```{r}
+#install.packages("tidyverse")
+#install.packages("corrplot")
+#install.packages("Metrics")
+```
+
+
+# Load Libraries
+```{r}
+library(tidyverse)
+library(ggplot2)
+library(corrplot)
+library(Metrics)
+```
+
+# Import Data
+```{r}
+FieldPlayers <- read_csv("FieldPlayers.csv") %>%
+  na.omit(Result)
+FieldPlayers
+```
+
+# Data Preparation
+
+Defenders
+```{r}
+defenseData <- FieldPlayers[FieldPlayers$`Position Category` == "Defenders", ] 
+
+defenseData$`Total Touches` <- defenseData$`Total Touches (#)`
+
+defenseData
+```
+Midfield
+```{r}
+midfieldData <- FieldPlayers[FieldPlayers$`Position Category` == "Midfielders", ] 
+
+midfieldData
+```
+
+Forwards
+```{r}
+forwardsData <- FieldPlayers[FieldPlayers$`Position Category` == "Forwards", ] 
+
+forwardsData$`Releases per min` <- forwardsData$`Releases per min (#/min)`
+forwardsData$`RV Zone 1` <- forwardsData$`RV Zone 1 [0-10( m/s)]`
+forwardsData$`Avg Time on Ball` <- forwardsData$`Avg Time on Ball - Short (sec)`
+forwardsData$`Short Possessions` <- forwardsData$`Short Possessions (#)`
+
+forwardsData
+```
+
+
+# Data Analytics 
+
+Defenders Correlation
+```{r}
+selectDefenseData <- select(defenseData, Result, 'Total Touches')
+corValueD <- cor(selectDefenseData, use = "complete.obs")
+corrplot(corValueD, method = "color", addCoef.col = "black", type = "lower")
+```
+
+Midfield Correlation
+```{r}
+selectMidfieldData <- select(midfieldData, Result, 'Top Speed (m/s)', 'Work Rate (m/min)', 'Receives Right (#)')
+
+corValMid <- cor(selectMidfieldData, use = "complete.obs")
+
+corrplot(corValMid, method = "color", addCoef.col = "black", type = "upper", title = "Midfield Correlation Matrix", mar = c(0,0,1,0))
+```
+
+Forwards Correlation
+```{r}
+selectForwardsData <- select(forwardsData, Result, SH, `SOG`, `SOG/Sh`, 'Releases per min',
+                             `RV Zone 1`, `One-Touch (#)`, `Short Possessions`, 
+                             `Avg Time on Ball`, `Top Speed (m/s)`)
+
+corValueFD <- cor(selectForwardsData, use = "complete.obs")
+corrplot(corValueFD, method = "color", addCoef.col = "black", type = "lower", title = "Forwards Correlation Matrix", mar = c(0,0,1,0))
+```
+
+
+# Data Visualiztions 
+
+## Defense graphs
+```{r}
+ggplot(data = defenseData, mapping = aes(y = `Result`, x = `Total Touches (#)`)) +
+  geom_point() +
+  geom_smooth(method = "lm") +
+  geom_smooth(method = "loess", color = "red") +
+  labs(title = "Defenders: Total Number of Touches vs. Match Results",
+       subtitle = "Data: 2020 Season",
+       x = "Total Number of Touches",
+       y = "Game Result",
+       caption = "*3 is equivelent to a Win")
+```
+
+## Midfield graphs
+
+Result vs Work rate
+```{r}
+ggplot(data = midfieldData, mapping = aes(y = `Result`, x = `Work Rate (m/min)`)) +
+geom_point() +
+geom_smooth(method = "lm") +
+  geom_smooth(method = "loess", color = "red") +
+  labs(title = "Midfielders: Work Rate (m/min) vs. Match Results",
+       subtitle = "Data: 2020 Season",
+       x = "Work Rate (m/min)",
+       y = "Game Result",
+       caption = "*3 is equivelent to a Win")
+```
+
+Result vs Receives Right 
+```{r}
+ggplot(data = midfieldData, mapping = aes(y = `Result`, x = `Receives Right (#)`)) +
+geom_point() +
+geom_smooth(method = "lm") +
+  geom_smooth(method = "loess", color = "red") +
+  labs(title = "Midfielders: Number of Receives Right vs. Match Results",
+       subtitle = "Data: 2020 Season",
+       x = "Number of Receives Right",
+       y = "Game Result",
+       caption = "*3 is equivelent to a Win")
+```
+
+Result vs Top Speed (m/s) 
+```{r}
+ggplot(data = midfieldData, mapping = aes(y = `Result`, x = `Top Speed (m/s)`)) +
+geom_point() +
+geom_smooth(method = "lm") +
+  geom_smooth(method = "loess", color = "red") +
+  labs(title = "Midfielders: Top Speed (m/s) vs. Match Results",
+       subtitle = "Data: 2020 Season",
+       x = "Top Speed (m/s)",
+       y = "Game Result",
+       caption = "*3 is equivelent to a Win")
+```
+
+## Forward Graphs
+Result vs SH 
+```{r}
+ggplot(data = forwardsData, mapping = aes(y = `Result`, x = `SH`)) +
+geom_point() +
+geom_smooth(method = "lm") +
+  geom_smooth(method = "loess", color = "red") +
+  labs(title = "Forwards: SH vs. Match Results",
+       subtitle = "Data: 2020 Season",
+       y = "Game Result",
+       caption = "*3 is equivelent to a Win")
+```
+
+Result vs SOG 
+```{r}
+ggplot(data = forwardsData, mapping = aes(y = `Result`, x = `SOG`)) +
+geom_point() +
+geom_smooth(method = "lm") +
+  geom_smooth(method = "loess", color = "red") +
+  labs(title = "Forwards: SOG vs. Match Results",
+       subtitle = "Data: 2020 Season",
+       y = "Game Result",
+       caption = "*3 is equivelent to a Win")
+```
+
+Result vs SOG/Sh 
+```{r}
+ggplot(data = forwardsData, mapping = aes(y = `Result`, x = `SOG/Sh`)) +
+geom_point() +
+geom_smooth(method = "lm") +
+  geom_smooth(method = "loess", color = "red") +
+  labs(title = "Forwards: SOG/Sh vs. Match Results",
+       subtitle = "Data: 2020 Season",
+       y = "Game Result",
+       caption = "*3 is equivelent to a Win")
+```
+
+Result vs Releases (#) 
+```{r}
+ggplot(data = forwardsData, mapping = aes(y = `Result`, x = `Releases (#)`)) +
+geom_point() +
+geom_smooth(method = "lm") +
+  geom_smooth(method = "loess", color = "red") +
+  labs(title = "Forwards: Number of Releases vs. Match Results",
+       subtitle = "Data: 2020 Season",
+       y = "Game Result",
+       caption = "*3 is equivelent to a Win")
+```
+
+Result vs Releases per min (#/min) 
+```{r}
+ggplot(data = forwardsData, mapping = aes(y = `Result`, x = `Releases per min (#/min)`)) +
+geom_point() +
+geom_smooth(method = "lm") +
+  geom_smooth(method = "loess", color = "red") +
+  labs(title = "Forwards: Number of Releases per min (#/min) vs. Match Results",
+       subtitle = "Data: 2020 Season",
+       y = "Game Result",
+       caption = "*3 is equivelent to a Win")
+```
+
+Result vs RV Zone 1 [0-10( m/s)] 
+```{r}
+ggplot(data = forwardsData, mapping = aes(y = `Result`, x = `RV Zone 1 [0-10( m/s)]`)) +
+geom_point() +
+geom_smooth(method = "lm") +
+  geom_smooth(method = "loess", color = "red") +
+  labs(title = "Forwards: RV Zone 1 [0-10( m/s)] vs. Match Results",
+       subtitle = "Data: 2020 Season",
+       y = "Game Result",
+       caption = "*3 is equivelent to a Win")
+```
+
+Result vs One-Touch (#) 
+```{r}
+ggplot(data = forwardsData, mapping = aes(y = `Result`, x = `One-Touch (#)`)) +
+geom_point() +
+geom_smooth(method = "lm") +
+  geom_smooth(method = "loess", color = "red") +
+  labs(title = "Forwards: Number of One-Touches vs. Match Results",
+       subtitle = "Data: 2020 Season",
+       y = "Game Result",
+       caption = "*3 is equivelent to a Win")
+```
+
+Result vs Short Possessions (#) 
+```{r}
+ggplot(data = forwardsData, mapping = aes(y = `Result`, x = `Short Possessions (#)`)) +
+geom_point() +
+geom_smooth(method = "lm") +
+  geom_smooth(method = "loess", color = "red") +
+  labs(title = "Forwards: Number of Short Possessions vs. Match Results",
+       subtitle = "Data: 2020 Season",
+       y = "Game Result",
+       caption = "*3 is equivelent to a Win")
+```
+
+Result vs Avg Time on Ball - Short (sec) 
+```{r}
+ggplot(data = forwardsData, mapping = aes(y = `Result`, x = `Avg Time on Ball - Short (sec)`)) +
+geom_point() +
+geom_smooth(method = "lm") +
+  geom_smooth(method = "loess", color = "red") +
+  labs(title = "Forwards: Avgerage Seconds on Ball vs. Match Results",
+       subtitle = "Data: 2020 Season",
+       y = "Game Result",
+       caption = "*3 is equivelent to a Win")
+```
+
+
+# Prediction Models & RMSE
+```{r}
+
+# Linear Regression Defense
+lmModelDefense <- lm(Result ~ `Total Touches (#)`, data = defenseData)
+predictedLM_Defense <- predict(lmModelDefense, data = defenseData)
+
+
+# Linear Regression Midfield
+lmModelMidfield <- lm(Result ~ `Top Speed (m/s)` + `Work Rate (m/min)` + `Receives Right (#)`, data = midfieldData)
+predictedLM_Midfield <- predict(lmModelMidfield, data = midfieldData)
+
+
+# Linear Regression Forwards
+lmModelForwards <- lm(Result ~ `SH` + `SOG` + `SOG/Sh` + `Releases (#)` + `Releases per min (#/min)` + `RV Zone 1 [0-10( m/s)]` +
+                     `One-Touch (#)` + `Short Possessions (#)` + `Avg Time on Ball - Short (sec)`, data = forwardsData)
+predictedLM_Forwards <- predict(lmModelForwards, data = forwardsData)
+
+
+
+# Calculate error: Root mean squared error (RMSE)
+rmseLM_Defense <- rmse(defenseData$Result, predictedLM_Defense)
+rmseLM_Midfield <- rmse(midfieldData$Result, predictedLM_Midfield)
+rmseLM_Forwards <- rmse(forwardsData$Result, predictedLM_Forwards)
+
+
+# Print the RMSE of each position model
+cat("\nRMSE:\n")
+cat("Defense LM:", rmseLM_Defense, "\n")
+cat("Midfield LM:", rmseLM_Midfield, "\n")
+cat("Forwards LM:", rmseLM_Forwards, "\n")
+
+```
+
+# Error Reporting
+```{r}
+errorData <- data.frame('Models' = c("Defender", "Midfielder", "Forward"), 
+                 'RMSE' = c(1.293275, 0.8685143, 0.01))
+print(errorData)
+```
+
+## Error Visualization
+
+```{r}
+ggplot(errorData, aes(x = Models, y = RMSE, fill = Models)) + 
+    geom_col(show.legend = FALSE) +
+  labs(title = "Linear Regression Model Acceracy",
+       #caption = "Each model predicted the Match Result given position based variables",
+       x = "Model by Position",
+       y = "Root Mean Square Error")
+
+```

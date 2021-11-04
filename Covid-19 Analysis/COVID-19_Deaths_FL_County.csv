@@ -1,0 +1,68 @@
+﻿Date,State,County name,FIPS County Code,Urban Rural Code,Deaths involving COVID-19,Deaths from All Causes,Footnote
+8/4/21,FL,Alachua County,12001,Medium metro,707,"6,362",
+8/4/21,FL,Baker County,12003,Large fringe metro,12,286,
+8/4/21,FL,Bay County,12005,Small metro,429,"3,652",
+8/4/21,FL,Bradford County,12007,Noncore,10,300,
+8/4/21,FL,Brevard County,12009,Medium metro,946,"13,140",
+8/4/21,FL,Broward County,12011,Large fringe metro,"3,186","28,003",
+8/4/21,FL,Calhoun County,12013,Noncore,19,286,
+8/4/21,FL,Charlotte County,12015,Small metro,402,"5,146",
+8/4/21,FL,Citrus County,12017,Small metro,380,"4,732",
+8/4/21,FL,Clay County,12019,Large fringe metro,401,"4,006",
+8/4/21,FL,Collier County,12021,Medium metro,607,"6,588",
+8/4/21,FL,Columbia County,12023,Micropolitan,176,"1,766",
+8/4/21,FL,DeSoto County,12027,Micropolitan,27,540,
+8/4/21,FL,Dixie County,12029,Noncore,,184,One or more data cells have counts between 1-9 and have been suppressed in accordance with NCHS confidentiality standards.
+8/4/21,FL,Duval County,12031,Large central metro,"1,830","18,384",
+8/4/21,FL,Escambia County,12033,Medium metro,906,"8,625",
+8/4/21,FL,Flagler County,12035,Medium metro,132,"2,472",
+8/4/21,FL,Franklin County,12037,Noncore,,156,One or more data cells have counts between 1-9 and have been suppressed in accordance with NCHS confidentiality standards.
+8/4/21,FL,Gadsden County,12039,Medium metro,16,499,
+8/4/21,FL,Gilchrist County,12041,Medium metro,,222,One or more data cells have counts between 1-9 and have been suppressed in accordance with NCHS confidentiality standards.
+8/4/21,FL,Glades County,12043,Noncore,,117,One or more data cells have counts between 1-9 and have been suppressed in accordance with NCHS confidentiality standards.
+8/4/21,FL,Gulf County,12045,Small metro,,239,One or more data cells have counts between 1-9 and have been suppressed in accordance with NCHS confidentiality standards.
+8/4/21,FL,Hamilton County,12047,Noncore,,146,One or more data cells have counts between 1-9 and have been suppressed in accordance with NCHS confidentiality standards.
+8/4/21,FL,Hardee County,12049,Micropolitan,,252,One or more data cells have counts between 1-9 and have been suppressed in accordance with NCHS confidentiality standards.
+8/4/21,FL,Hendry County,12051,Micropolitan,27,371,
+8/4/21,FL,Hernando County,12053,Large fringe metro,425,"5,064",
+8/4/21,FL,Highlands County,12055,Small metro,359,"3,192",
+8/4/21,FL,Hillsborough County,12057,Large central metro,"1,900","21,904",
+8/4/21,FL,Holmes County,12059,Noncore,21,418,
+8/4/21,FL,Indian River County,12061,Small metro,231,"3,783",
+8/4/21,FL,Jackson County,12063,Noncore,100,978,
+8/4/21,FL,Jefferson County,12065,Medium metro,,186,One or more data cells have counts between 1-9 and have been suppressed in accordance with NCHS confidentiality standards.
+8/4/21,FL,Lafayette County,12067,Noncore,,94,One or more data cells have counts between 1-9 and have been suppressed in accordance with NCHS confidentiality standards.
+8/4/21,FL,Lake County,12069,Large fringe metro,638,"7,518",
+8/4/21,FL,Lee County,12071,Medium metro,"1,009","13,487",
+8/4/21,FL,Leon County,12073,Medium metro,615,"5,416",
+8/4/21,FL,Levy County,12075,Noncore,20,687,
+8/4/21,FL,Liberty County,12077,Noncore,,63,One or more data cells have counts between 1-9 and have been suppressed in accordance with NCHS confidentiality standards.
+8/4/21,FL,Madison County,12079,Noncore,11,273,
+8/4/21,FL,Manatee County,12081,Medium metro,665,"7,813",
+8/4/21,FL,Marion County,12083,Medium metro,940,"9,399",
+8/4/21,FL,Martin County,12085,Medium metro,425,"3,665",
+8/4/21,FL,Miami-Dade County,12086,Large central metro,"6,069","40,505",
+8/4/21,FL,Monroe County,12087,Micropolitan,27,898,
+8/4/21,FL,Nassau County,12089,Large fringe metro,55,"1,191",
+8/4/21,FL,Okaloosa County,12091,Small metro,337,"3,494",
+8/4/21,FL,Okeechobee County,12093,Micropolitan,68,743,
+8/4/21,FL,Orange County,12095,Large central metro,"1,638","18,228",
+8/4/21,FL,Osceola County,12097,Large fringe metro,562,"4,717",
+8/4/21,FL,Palm Beach County,12099,Large fringe metro,"2,980","27,867",
+8/4/21,FL,Pasco County,12101,Large fringe metro,777,"11,082",
+8/4/21,FL,Pinellas County,12103,Large central metro,"1,647","22,161",
+8/4/21,FL,Polk County,12105,Medium metro,"1,234","12,830",
+8/4/21,FL,Putnam County,12107,Micropolitan,104,"1,490",
+8/4/21,FL,St. Johns County,12109,Large fringe metro,101,"2,936",
+8/4/21,FL,St. Lucie County,12111,Medium metro,467,"6,049",
+8/4/21,FL,Santa Rosa County,12113,Medium metro,136,"2,015",
+8/4/21,FL,Sarasota County,12115,Medium metro,922,"10,625",
+8/4/21,FL,Seminole County,12117,Large fringe metro,404,"5,940",
+8/4/21,FL,Sumter County,12119,Small metro,296,"4,047",
+8/4/21,FL,Suwannee County,12121,Noncore,26,584,
+8/4/21,FL,Taylor County,12123,Noncore,,289,One or more data cells have counts between 1-9 and have been suppressed in accordance with NCHS confidentiality standards.
+8/4/21,FL,Union County,12125,Noncore,27,197,
+8/4/21,FL,Volusia County,12127,Medium metro,858,"13,104",
+8/4/21,FL,Wakulla County,12129,Medium metro,11,352,
+8/4/21,FL,Walton County,12131,Small metro,99,"1,141",
+8/4/21,FL,Washington County,12133,Noncore,38,458,
