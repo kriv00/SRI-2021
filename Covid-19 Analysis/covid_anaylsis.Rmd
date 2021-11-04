@@ -1,0 +1,475 @@
+---
+title: "Covid-19 Anaylsis"
+author: 
+- "Kelly Rivera, Rachel Tuffy, Manuela Montoya, Amanda Ibarra"
+- "Dr. Sean Mondesire"
+output: html_notebook
+---
+This project analyzes the state of South Florida COVID-19 vaccinations. All data is provided by the Center for Disease Control (CDC).
+
+Updated: 8/6/2021
+
+Data Source: https://data.cdc.gov/Vaccinations/COVID-19-Vaccinations-in-the-United-States-County/8xkx-amqh
+
+# Install Libraries
+```{r}
+#install.packages("tidyverse")
+#install.packages("dplyr")
+#install.packages("plotly")
+```
+
+# Load Libraries
+```{r}
+library(tidyverse)
+library(ggplot2)
+library(dplyr) 
+library(plotly)
+```
+
+# CSV Files
+```{r}
+# Covid vaccine data
+us_covid_vaccination_csv <- "COVID-19_Vaccinations_in_the_United_States_County.csv"
+
+# Covid cases and deaths data
+us_covid_cases_and_deaths_csv <- "United_States_COVID-19_Cases_and_Deaths_by_State_over_Time.csv"
+
+# Florida county deaths data
+florida_county_deaths_csv <- "COVID-19_Deaths_FL_County.csv"
+```
+
+
+# Import Data
+```{r}
+# Vaccination Data
+# importing the data
+vaccData <- read_csv(covid_vaccination_csv) 
+vaccData$Date <- as.Date(vaccData$Date, format = "%m/%d/%Y")  #set date column to date
+
+# arranging the data to show chronologically 
+vaccData %>% arrange(Date)
+```
+
+```{r}
+# Covid-19 Case Data
+# Importing the data
+covidCases <- read_csv(us_covid_cases_and_deaths_csv)
+
+# set date column to date
+covidCases$submission_date <- as.Date(covidCases$submission_date, format = "%m/%d/%Y")  
+
+# Renaming columns for readability
+covidCases$Date <- covidCases$submission_date
+covidCases$`New Cases` <- covidCases$new_case
+covidCases$`New Deaths` <- covidCases$new_death
+
+# arranging the data to show chronologically 
+covidCases %>% arrange(submission_date)
+```
+
+
+```{r}
+# FL County Covid Death Data 
+# Importing the data
+covidCountyFL <- read_csv(florida_county_deaths_csv)
+
+# set date column to date
+covidCountyFL$Date <- as.Date(covidCountyFL$Date, format = "%m/%d/%y")
+
+# arranging the data to show chronologically 
+covidCountyFL %>% arrange(Date)
+```
+
+# Data Preparation
+```{r}
+# US Daily Vaccinations
+# New dataframea of total US daily vaccinations and percentage 
+usVacTot <- aggregate(Series_Complete_Yes ~ Date, data = vaccData, sum) 
+usVacTotPct <- aggregate(Series_Complete_Pop_Pct ~ Date, data = vaccData, mean) 
+
+usVac12 <- aggregate(Series_Complete_12Plus ~ Date, data = vaccData, sum)  
+usVac12Pct <- aggregate(Series_Complete_12PlusPop_Pct ~ Date, data = vaccData, mean)  
+
+usVac18 <- aggregate(Series_Complete_18Plus ~ Date, data = vaccData, sum)   
+usVac18Pct <- aggregate(Series_Complete_18PlusPop_Pct ~ Date, data = vaccData, mean)   
+
+usVac65 <- aggregate(Series_Complete_65Plus ~ Date, data = vaccData, sum)   
+usVac65Pct <- aggregate(Series_Complete_65PlusPop_Pct ~ Date, data = vaccData, mean)   
+
+```
+
+```{r}
+# Merging the dataframes into one total us daily vaccination rates
+usVaccs <- merge(merge(merge(usVacTot, usVac12, by = "Date"), 
+                       usVac18, by = "Date"), 
+                 usVac65, by = "Date")
+usVaccs
+```
+
+```{r}
+# Florida Daily Vaccinations
+# filtering for only FL data
+vaccFL <- (filter(vaccData, Recip_State == 'FL')) %>%                      
+  
+  # selecting useful columns
+    subset(select = c(Date, Recip_State, Series_Complete_12Plus, Series_Complete_12PlusPop_Pct, 
+                      Series_Complete_18Plus, Series_Complete_18PlusPop_Pct, 
+                      Series_Complete_65Plus, Series_Complete_65PlusPop_Pct)) %>%  
+  # arranging the data to show chronologically
+  arrange(Date)                                                             
+
+vaccFL
+```
+
+```{r}
+# US Daily Covid
+# New dataframe of total US daily new cases and deaths 
+usCases <- aggregate(`New Cases` ~ Date, data = covidCases, sum)    # daily total new cases
+usDeaths <- aggregate(`New Deaths` ~ Date, data = covidCases, sum)  # daily deaths
+
+usCovid <- merge(usCases, usDeaths, by = "Date")
+usCovid
+```
+
+```{r}
+# Florida Daily Covid-19
+# Filter for only FL data
+covidFL <- filter(covidCases, state == 'FL') %>%  
+  
+  # selecting useful columns
+    subset(select = c(Date, `New Cases`, `New Deaths`)) %>%   
+  
+  # arranging the data to show chronologically
+  arrange(Date)                                                             
+
+covidFL
+```
+
+```{r}
+# Broward County Vaccination Data
+# filter for only broward vaccine 
+BrowardVac <- filter(vaccData, Recip_County  == 'Broward County') %>%
+  
+  # selecting useful columns
+    subset(select = c(Date, Series_Complete_Yes, Series_Complete_12Plus, Series_Complete_12PlusPop_Pct, 
+                      Series_Complete_18Plus, Series_Complete_18PlusPop_Pct, 
+                      Series_Complete_65Plus, Series_Complete_65PlusPop_Pct)) %>%
+  
+  # arranging the data to show chronologically
+    arrange(Date) 
+
+BrowardVac
+```
+
+
+```{r}
+# South Florida Counties Covid-19 Deaths
+# Filter for certain FL countries
+southFLDeaths = filter(covidCountyFL, `County name` == 'Miami-Dade County' | `County name` == 'Broward County'| `County name` == 'Palm Beach County') %>%
+  
+  # selecting useful columns
+    subset(select = c(Date, `County name`, `Deaths involving COVID-19`, `Deaths from All Causes`)) %>%
+  
+  # arranging the data to show chronologically
+    arrange(Date)                                                             
+  
+southFLDeaths
+```
+
+
+```{r}
+# Miami Vaccination data
+# filtering for only FL data
+miamiVacc <- (filter(vaccData, Recip_County == "Miami-Dade County")) %>%                      
+  
+  # selecting useful columns
+    subset(select = c(Date, Series_Complete_12Plus, Series_Complete_12PlusPop_Pct, 
+                      Series_Complete_18Plus, Series_Complete_18PlusPop_Pct, 
+                      Series_Complete_65Plus, Series_Complete_65PlusPop_Pct)) %>%  
+  # arranging the data to show chronologically
+  arrange(Date)                                                             
+
+miamiVacc
+```
+
+
+# Data Analytics 
+
+Covid-19 Case Data
+
+## Bar Plot: New Cases in US vs. Date
+```{r}
+# Kelly Rivera
+usCaseGraph <- ggplot(mapping = aes(x = `Date`, 
+                                    y = `New Cases`/1000, 
+                                    color = `New Cases`, 
+                                    text = paste("<br>Date:", Date,
+                                                 "<br>New Cases:", `New Cases`/1000))) +
+  
+  geom_col(data = usCovid, show.legend = FALSE) +
+  scale_x_date(date_labels = "%b %Y") +
+  labs(title = "United States: Daily New Covid Cases",
+       subtitle = "Source: CDC",
+       x = "Date",
+       y = "Number of Cases (thousands)")
+
+ggplotly(usCaseGraph, tooltip = c("text"))
+```
+
+## US New Cases Line Graph
+```{r}
+# Amanda Ibarra
+USCases<-ggplot(data=usCovid, aes(x= `Date`, y= `New Cases`)) +
+  geom_line()+
+  geom_point(size = 1)+ labs(title = "New Cases in United States",
+         x = "Date",
+         y = "New Cases",
+         subtitle = "Source: CDC") +
+  scale_colour_discrete("County")
+
+ggplotly(USCases)
+```
+
+## Bar Plot: New Deaths in US vs. Date
+```{r}
+# Kelly Rivera
+usDeathsGraph <- ggplot(mapping = aes(x = `Date`, 
+                                    y = `New Deaths`, 
+                                    color = `New Deaths`, 
+                                    text = paste("<br>Date:", Date,
+                                                 "<br>New Deaths:", `New Deaths`))) +
+  
+  geom_col(data = usCovid, show.legend = FALSE) +
+  scale_x_date(date_labels = "%b %Y") +
+  labs(title = "United States: Daily New Covid Deaths",
+       subtitle = "Source: CDC",
+       x = "Date",
+       y = "Number of Deaths")
+
+newUsDeathsGraph <- usDeathsGraph+scale_color_gradient(low="firebrick4", high="red") # changing the gradient colors from defult blue
+
+ggplotly(newUsDeathsGraph, tooltip = c("text"))
+```
+
+## Line Plot: New Cases in FL vs. Date 
+```{r}
+# Rachel Tuffy
+graph1 <- ggplot(data = covidFL, mapping = aes(y = `New Cases`/1000, x = `Date`)) +
+  geom_smooth(method = "loess", type = "scatter") +
+  geom_line() +
+  scale_x_date(date_labels = "%b %Y") +
+  labs(title = "New Cases in FL by Date",
+       x = "Date",
+       y = "New Cases (thousands)")
+ggplotly(graph1)
+```
+
+## Line Plot: New Cases in FL vs. Date
+```{r}
+# Rachel Tuffy
+graph1 <- ggplot(data = covidFL, mapping = aes(y = `New Cases`/1000, x = `Date`)) +
+  geom_smooth(method = "loess", type = "scatter") +
+  geom_line() +
+  scale_x_date(date_labels = "%b %Y") +
+  labs(title = "New Cases in FL by Date",
+       x = "Date",
+       y = "New Cases (thousands)")
+ggplotly(graph1)
+```
+
+## Bar Plot: New Cases in FL vs. Date
+```{r}
+# Kelly Rivera
+flCaseGraph <- ggplot(mapping = aes(x = `Date`, 
+                                    y = `New Cases`/1000, 
+                                    color = `New Cases`, 
+                                    text = paste("<br>Date:", Date,
+                                                 "<br>New Cases:", `New Cases`/1000))) +
+  
+  geom_col(data = covidFL, show.legend = FALSE) +
+  scale_x_date(date_labels = "%b %Y") +
+  labs(title = "Florida: Daily New Covid Cases",
+       subtitle = "Source: CDC",
+       x = "Date",
+       y = "Number of Cases (thousands)")
+
+ggplotly(flCaseGraph, tooltip = c("text"))
+```
+
+## Line Plot: New Deaths in FL vs. Date
+```{r}
+# Kelly Rivera
+flDeathsGraph <- ggplot(mapping = aes(x = `Date`, 
+                                    y = `New Deaths`, 
+                                    color = `New Deaths`, 
+                                    text = paste("<br>Date:", Date,
+                                                 "<br>New Deaths:", `New Deaths`))) +
+  
+  geom_col(data = covidFL, show.legend = FALSE) +
+  scale_x_date(date_labels = "%b %Y") +
+  labs(title = "Florida: Daily New Covid Deaths",
+       subtitle = "Source: CDC",
+       x = "Date",
+       y = "Number of Deaths")
+
+newFLDeathsGraph <- flDeathsGraph+scale_color_gradient(low="firebrick4", high="red") # changing the gradient colors from default blue
+
+ggplotly(newFLDeathsGraph, tooltip = c("text"))
+```
+
+Vaccination Data
+
+## Barplot: Percenatge of US vaccinations by Age Group
+```{r}
+# Kelly Rivera
+usCompSeriesPerc <- ggplot(mapping = aes(x = Date,
+                                      y = Series_Complete_Yes)) + 
+                  geom_col(data = usVaccs) +
+                  scale_x_date(date_labels = "%b %Y") +
+                  labs(title = "US Fully Vaccationate Percentage",
+                         x = "Date",
+                         y = "Series Complete Percentage (%)",
+                         subtitle = "Source: CDC") +
+                  scale_colour_discrete("County")
+
+ggplotly(usCompSeriesPerc)
+```
+
+## Barplot: Numbers of US vaccinations by Age Group
+```{r}
+# Kelly Rivera
+usCompSeries <- ggplot(mapping = aes(x = Date)) + 
+                  geom_line(data = usVaccs, mapping = aes(y = Series_Complete_12Plus/1000000), color = "blue") +
+                  geom_line(data = usVaccs, mapping = aes(y = Series_Complete_18Plus/1000000), color = "red") +
+                  geom_line(data = usVaccs, mapping = aes(y = Series_Complete_65Plus/1000000), color = "yellow") +
+                  scale_x_date(date_labels = "%b %Y") +
+                  labs(title = "US Fully Vaccationate",
+                         x = "Date",
+                         y = "Number of Series Complete (millions)",
+                         subtitle = "Source: CDC") +
+                  scale_colour_discrete("County")
+
+ggplotly(usCompSeries)
+```
+
+## Barplot: Percenatge of FL vaccinations by Age Group
+```{r}
+
+```
+
+## Barplot: Numbers of FL vaccinations by Age Group
+```{r}
+# Kelly Rivera
+flCompSeries <- ggplot(mapping = aes(x = Date)) + 
+                  geom_line(data = vaccFL, mapping = aes(y = Series_Complete_12Plus), color = "blue") +
+                  geom_line(data = vaccFL, mapping = aes(y = Series_Complete_18Plus), color = "red") +
+                  geom_line(data = vaccFL, mapping = aes(y = Series_Complete_65Plus), color = "yellow") +
+                  scale_x_date(date_labels = "%b %Y") +
+                  labs(title = "US Fully Vaccationate",
+                         x = "Date",
+                         y = "Number of Series Complete (millions)",
+                         subtitle = "Source: CDC") +
+                  scale_colour_discrete("County")
+
+ggplotly(flCompSeries)
+```
+
+## Bar plot: Broward Vaccination Population
+```{r}
+# Amanda Ibarra
+BrowardFullyVac<-ggplot(BrowardVac, aes(x=Date, y=Series_Complete_Yes)) + 
+  geom_bar(stat = "identity", color= "orange") + scale_x_date(date_labels = "%b %Y") +
+  labs(title = "Broward County: Fully Vaccinated Population",
+         x = "Date",
+         y = "Series Complete",
+         subtitle = "Source: CDC") +
+  scale_colour_discrete("County")
+ggplotly(BrowardFullyVac)
+```
+
+## Bar plot: Broward Vaccination 12 Plus
+```{r}
+# Amanda Ibarra
+Broward12PlusVac <-ggplot(BrowardVac, aes(x=Date, y=Series_Complete_12Plus)) + 
+  geom_bar(stat = "identity", color= "red") + scale_x_date(date_labels = "%b %Y") +
+  labs(title = "Broward County: Fully Vaccinated 12 Plus Population",
+         x = "Date",
+         y = "Series Complete",
+         subtitle = "Source: CDC") +
+  scale_colour_discrete("County")
+ggplotly(Broward12PlusVac)
+```
+
+## Bar plot: Broward Vaccination 18 Plus
+```{r}
+# Amanda Ibarra
+Broward18PlusVac <-ggplot(BrowardVac, aes(x=Date, y=Series_Complete_18Plus)) + 
+  geom_bar(stat = "identity", color= "blue") + scale_x_date(date_labels = "%b %Y") +
+  labs(title = "Broward County: Fully Vaccinated 18 Plus Population",
+         x = "Date",
+         y = "Series Complete",
+         subtitle = "Source: CDC") +
+  scale_colour_discrete("County")
+ggplotly(Broward18PlusVac)
+```
+
+## Bar plot: Broward Vaccination 65 Plus
+```{r}
+# Amanda Ibarra
+Broward65PlusVac <-ggplot(BrowardVac, aes(x=Date, y=Series_Complete_65Plus)) + 
+  geom_bar(stat = "identity", color= "orange") +  scale_x_date(date_labels = "%b %Y") +
+  labs(title = "Broward County: Fully Vaccinated 65 Plus Population",
+         x = "Date",
+         y = "Series Complete",
+         subtitle = "Source: CDC") +
+  scale_colour_discrete("County")
+ggplotly(Broward65PlusVac)
+```
+
+## Bar Plot: Covid Deaths for SoFL counties
+```{r}
+# Manuela Montoya
+ggplot(southFLDeaths,mapping = aes(y= `Deaths involving COVID-19`/1000 ,x =`County name`, fill = `County name`)) +
+  geom_bar(stat = 'identity', show.legend = FALSE) +
+  labs(title = "South Florida: Deaths Involving COVID-19",
+       y = "Number of Deaths (thousands)", x = 'County Name ')
+```
+
+## Miami vaccinations Age 12+
+```{r}
+# Manuela Montoya
+Age12 <-ggplot(miamiVacc, mapping = aes(y= Series_Complete_12Plus, x = Date)) +
+  geom_bar(stat = 'identity', color = "blue") +
+  scale_x_date(date_labels = "%b %Y") +
+  labs(title = "Miami Vaccination Numbers: Age 12+",
+       y = "Vaccination Numbers",
+       x = 'Date')
+
+ggplotly(Age12)
+```
+
+## Miami vaccinations Age 18+
+```{r}
+# Manuela Montoya
+Age18 <-ggplot(miamiVacc, mapping = aes(y= Series_Complete_18Plus, x = Date)) +
+  geom_bar(stat = 'identity', color = "red") +
+  scale_x_date(date_labels = "%b %Y") +
+  labs(title = "Miami Vaccination Numbers: Age 18+",
+       y = "Vaccination Numbers",
+       x = 'Date')
+
+ggplotly(Age18)
+```
+
+## Miami vaccinations Age 65+
+```{r}
+# Manuela Montoya
+Age65 <- ggplot(miamiVacc, mapping = aes(y= Series_Complete_65Plus, x = Date)) +
+  geom_bar(stat = 'identity', color = 'orange') +
+  scale_x_date(date_labels = "%b %Y") +
+  labs(title = "Miami Vaccination Numbers: Age 65+",
+       y = "Vaccination Numbers",
+       x = 'Date')
+
+ggplotly(Age65)
+```
