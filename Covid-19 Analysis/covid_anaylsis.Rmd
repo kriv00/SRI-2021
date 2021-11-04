@@ -43,7 +43,7 @@ florida_county_deaths_csv <- "COVID-19_Deaths_FL_County.csv"
 ```{r}
 # Vaccination Data
 # importing the data
-vaccData <- read_csv(covid_vaccination_csv) 
+vaccData <- read_csv(us_covid_vaccination_csv) 
 vaccData$Date <- as.Date(vaccData$Date, format = "%m/%d/%Y")  #set date column to date
 
 # arranging the data to show chronologically 
